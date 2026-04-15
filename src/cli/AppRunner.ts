@@ -13,7 +13,7 @@ export class AppRunner {
     console.log("--- Starting ADS Dental CLI ---");
 
     try {
-      // 1. Create Base Data (Dentist & Surgery)
+      // Create Base Data (Dentist & Surgery)
       const dentistRepo = AppDataSource.getRepository(Dentist);
       const surgeryRepo = AppDataSource.getRepository(Surgery);
 
@@ -32,7 +32,7 @@ export class AppRunner {
       surgery.address = surgeryAddress;
       const savedSurgery = await surgeryRepo.save(surgery);
 
-      // 2. Use Service to Create Patient
+      // Use Service to Create Patient
       console.log("\n[1] Registering New Patient...");
       const newPatient = await this.patientService.registerNewPatient(
         "Gillian",
@@ -45,7 +45,7 @@ export class AppRunner {
         `Patient Created: ${newPatient.firstName} ${newPatient.lastName}`,
       );
 
-      // 3. Use Service to Book Appointment
+      // Use Service to Book Appointment
       console.log("\n[2] Booking Appointment...");
       const appointmentDate = new Date("2026-05-15T10:00:00Z");
       const appointment = await this.appointmentService.bookAppointment(
@@ -56,7 +56,7 @@ export class AppRunner {
       );
       console.log(`Appointment Booked for ID: ${appointment.id}`);
 
-      // 4. Fetch and Display Data
+      // Fetch and Display Data
       console.log("\n[3] Fetching all appointments...");
       const allAppointments = await this.appointmentService.getAppointments();
 

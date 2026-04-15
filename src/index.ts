@@ -5,15 +5,29 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@as-integrations/express5";
 import { AppDataSource } from "./config/database";
 import { typeDefs, resolvers } from "./graphql/schema";
-
+import apiRoutes from "./routes/api";
 async function bootstrap() {
   try {
-    // 1. Initialize Database
+    //Initialize Database
     await AppDataSource.initialize();
     console.log("Database connected!");
 
-    // 2. Initialize Express & Apollo Server
+    //Initialize Express & Apollo Server
     const app = express();
+
+    // Ensure Express can parse JSON request bodies!
+    app.use(cors());
+    app.use(express.json());
+
+    // ---------------------------------------------
+    // REST API MOUNT POINT (Requirement)
+    // ---------------------------------------------
+    app.use("/adsweb/api/v1", apiRoutes);
+    console.log("REST API ready at http://localhost:8080/adsweb/api/v1");
+
+    // ---------------------------------------------
+    // GRAPHQL API MOUNT POINT
+    // ---------------------------------------------
     const server = new ApolloServer({
       typeDefs,
       resolvers,
@@ -21,10 +35,10 @@ async function bootstrap() {
 
     await server.start();
 
-    // 3. Mount GraphQL endpoint at /graphql
+    //  Mount GraphQL endpoint at /graphql
     app.use("/graphql", cors(), express.json(), expressMiddleware(server));
 
-    // 4. Start listening on port 8080
+    // Start listening on port 8080
     app.listen(8080, () => {
       console.log(`🚀 Server ready at http://localhost:8080/graphql`);
     });
