@@ -1,0 +1,78 @@
+1. GET All Patients (Sorted by Last Name)
+   query {
+   getAllPatients {
+   id
+   firstName
+   lastName
+   primaryAddress {
+   street
+   city
+   }
+   }
+   } 2. GET Patient by ID (With Exception Testing)
+
+query {
+getPatientById(id: 1) {
+id
+firstName
+lastName
+primaryAddress {
+city
+}
+}
+}
+
+# Note: Try running it with id: 999 to show your Exception Handling working!
+
+3. POST (Register) New Patient
+
+mutation {
+registerPatient(patient: {
+firstName: "Sarah"
+lastName: "Connor"
+primaryAddress: {
+street: "123 Cyber St"
+city: "Los Angeles"
+zipCode: "90001"
+}
+}) {
+id
+firstName
+}
+} 4. PUT (Update) Patient
+
+mutation {
+updatePatient(id: 1, patient: {
+lastName: "Connor-Smith"
+}) {
+id
+firstName
+lastName
+}
+} 5. DELETE Patient
+
+mutation {
+deletePatient(id: 1)
+} 6. Search Patients
+
+query {
+searchPatients(searchString: "Sarah") {
+id
+firstName
+lastName
+}
+}
+
+7. GET All Addresses (Sorted by City with Patient Data)
+
+query {
+getAllAddresses {
+id
+street
+city
+patient {
+firstName
+lastName
+}
+}
+}

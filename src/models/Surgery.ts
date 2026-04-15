@@ -14,7 +14,7 @@ export class Surgery {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: false })
+  @Column({ type: "varchar", nullable: false })
   name!: string;
 
   @OneToOne(() => Address, { cascade: true, nullable: false, eager: true })

@@ -5,6 +5,6 @@ export class Role {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ type: "varchar", nullable: false, unique: true })
   roleName!: string;
 }

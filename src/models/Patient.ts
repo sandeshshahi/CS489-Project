@@ -14,10 +14,10 @@ export class Patient {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: false })
+  @Column({ type: "varchar", nullable: false })
   firstName!: string;
 
-  @Column({ nullable: false })
+  @Column({ type: "varchar", nullable: false })
   lastName!: string;
 
   @OneToOne(() => Address, { cascade: true, nullable: false, eager: true })

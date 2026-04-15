@@ -6,10 +6,10 @@ export class Dentist {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: false })
+  @Column({ type: "varchar", nullable: false })
   firstName!: string;
 
-  @Column({ nullable: false })
+  @Column({ type: "varchar", nullable: false })
   specialization!: string;
 
   @OneToMany(() => Appointment, (appointment) => appointment.dentist)

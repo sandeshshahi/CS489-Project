@@ -12,7 +12,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ type: "varchar", nullable: false, unique: true })
   username!: string;
 
   @ManyToOne(() => Role, { nullable: false, eager: true })
