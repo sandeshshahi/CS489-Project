@@ -9,7 +9,9 @@
    city
    }
    }
-   } 2. GET Patient by ID (With Exception Testing)
+   } 
+   
+2. GET Patient by ID (With Exception Testing)
 
 query {
 getPatientById(id: 1) {

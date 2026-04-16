@@ -73,7 +73,15 @@ export const resolvers = {
   },
 
   Query: {
-    getAllPatients: async () => {
+    getAllPatients: async (_parent: any, _args: any, context: any) => {
+      if (!context.user) {
+        throw new GraphQLError(
+          "Access Denied: You must be logged in to view patients.",
+          {
+            extensions: { code: "UNAUTHENTICATED", http: { status: 401 } },
+          },
+        );
+      }
       const patientRepo = AppDataSource.getRepository(Patient);
       return await patientRepo.find({
         relations: ["address"],
@@ -168,7 +176,27 @@ export const resolvers = {
       return await patientRepo.save(existingPatient);
     },
 
-    deletePatient: async (_: any, { id }: { id: string }) => {
+    deletePatient: async (
+      _parent: any,
+      { id }: { id: string },
+      context: any,
+    ) => {
+      // check authentication
+      if (!context.user) {
+        throw new GraphQLError("Access Denied: Please log in.", {
+          extensions: { code: "UNAUTHENTICATED", http: { status: 401 } },
+        });
+      }
+      //    Check Role Authorization (Must be ADMIN)
+      if (context.user.role !== "ADMIN") {
+        throw new GraphQLError(
+          "Forbidden: Only Administrators can delete patients.",
+          {
+            extensions: { code: "FORBIDDEN", http: { status: 403 } },
+          },
+        );
+      }
+
       const patientRepo = AppDataSource.getRepository(Patient);
       const existingPatient = await patientRepo.findOneBy({ id: parseInt(id) });
 

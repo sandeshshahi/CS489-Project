@@ -6,6 +6,9 @@ import { expressMiddleware } from "@as-integrations/express5";
 import { AppDataSource } from "./config/database";
 import { typeDefs, resolvers } from "./graphql/schema";
 import apiRoutes from "./routes/api";
+import authRoutes from "./routes/authRoutes";
+import jwt from "jsonwebtoken";
+
 async function bootstrap() {
   try {
     //Initialize Database
@@ -22,6 +25,7 @@ async function bootstrap() {
     // ---------------------------------------------
     // REST API MOUNT POINT (Requirement)
     // ---------------------------------------------
+    app.use("/auth", authRoutes);
     app.use("/adsweb/api/v1", apiRoutes);
     console.log("REST API ready at http://localhost:8080/adsweb/api/v1");
 
@@ -36,7 +40,33 @@ async function bootstrap() {
     await server.start();
 
     //  Mount GraphQL endpoint at /graphql
-    app.use("/graphql", cors(), express.json(), expressMiddleware(server));
+    app.use(
+      "/graphql",
+      cors(),
+      express.json(),
+      expressMiddleware(server, {
+        // The context function runs before every single GraphQL request
+        context: async ({ req }) => {
+          const authHeader = req.headers.authorization;
+          if (authHeader && authHeader.startsWith("Bearer ")) {
+            const token = authHeader.split(" ")[1];
+            try {
+              const JWT_SECRET =
+                process.env.JWT_SECRET ||
+                "super_secret_dental_key_for_development";
+              const decoded = jwt.verify(token, JWT_SECRET);
+              // Return the decoded user. This makes 'contextValue.user' available in all resolvers!
+              return { user: decoded };
+            } catch (err) {
+              // Token is expired or invalid
+              return { user: null };
+            }
+          }
+          // No token provided
+          return { user: null };
+        },
+      }),
+    );
 
     // Start listening on port 8080
     app.listen(8080, () => {

@@ -3,22 +3,28 @@ import { AppDataSource } from "../config/database";
 import { Patient } from "../models/Patient";
 import { Address } from "../models/Address";
 import { Like } from "typeorm";
+import { authenticateJWT, authorizeRoles } from "../middleware/auth.middleware";
 
 const router = Router();
 
 // GET all Patients (Sorted by lastName ASC)
-router.get("/patients", async (req: Request, res: Response) => {
-  try {
-    const patientRepo = AppDataSource.getRepository(Patient);
-    const patients = await patientRepo.find({
-      relations: ["address"],
-      order: { lastName: "ASC" },
-    });
-    res.status(200).json(patients);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error });
-  }
-});
+router.get(
+  "/patients",
+  authenticateJWT,
+  authorizeRoles("ADMIN", "OFFICE_MANAGER"),
+  async (req: Request, res: Response) => {
+    try {
+      const patientRepo = AppDataSource.getRepository(Patient);
+      const patients = await patientRepo.find({
+        relations: ["address"],
+        order: { lastName: "ASC" },
+      });
+      res.status(200).json(patients);
+    } catch (error) {
+      res.status(500).json({ message: "Server Error", error });
+    }
+  },
+);
 
 // GET Patient by ID
 router.get(
@@ -108,6 +114,8 @@ router.put(
 // DELETE Patient
 router.delete(
   "/patient/:id",
+  authenticateJWT,
+  authorizeRoles("ADMIN"),
   async (req: Request, res: Response): Promise<any> => {
     try {
       const patientRepo = AppDataSource.getRepository(Patient);
